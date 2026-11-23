@@ -1,0 +1,493 @@
+
+Understand Linux file types
+Linux has different types of files.
+Type	Meaning	Example
+Regular file	Stores data or text	notes.txt
+Directory	Contains files and directories	/home
+Symbolic link	Points to another path	app-link
+Device file	Represents a device	/dev/null
+Named pipe	Used for process communication	FIFO
+
+For this lesson, we mainly focus on regular text files.
+
+Let's create our working directory:
+mkdir -p ~/linux-lab/files
+mkdir -p ~/linux-lab/logs
+mkdir -p ~/linux-lab/config
+
+cd ~/linux-lab
+
+
+Part 2. Reading files
+1. cat – Display file contents
+cat stands for concatenate.
+
+It is used to display file contents, combine files and write content through redirection.
+
+First create a file:
+cd ~/linux-lab/files
+
+touch notes.txt
+
+
+Add some content:
+echo "Linux is an operating system" > notes.txt
+
+
+Now display it:
+cat notes.txt
+
+
+Expected output:
+Linux is an operating system
+
+
+Important cat variations
+Display line numbers:
+cat -n notes.txt
+
+
+Display multiple files:
+cat file1.txt file2.txt
+
+
+Combine files into another file:
+cat file1.txt file2.txt > combined.txt
+
+
+Real-world usage: Quickly inspect a small configuration file.
+
+Example:
+cat /etc/hostname
+
+
+2. less – Read large files
+Imagine a log file containing 100,000 lines.
+
+Using cat will print everything into the terminal, making it difficult to inspect.
+
+For this purpose, use less.
+less notes.txt
+
+
+Useful keyboard shortcuts:
+Key	Purpose
+Space	Next page
+b	Previous page
+Enter	Move one line down
+g	Go to beginning
+G	Go to end
+/error	Search for error
+n	Next search result
+q	Quit
+
+Company example:
+less /var/log/syslog
+
+
+You can inspect system logs page by page.
+
+Remember:
+- cat = Display the whole file.
+- less = Read large files interactively.
+3. head – Display beginning of file
+Purpose: Displays the first lines of a file.
+head notes.txt
+
+
+By default, it displays 10 lines.
+
+Display first 5 lines:
+head -n 5 notes.txt
+
+
+Example:
+head -n 20 /var/log/syslog
+
+
+Useful when checking the beginning of a log file.
+4. tail – Display end of file
+Purpose: Displays the last lines of a file.
+tail notes.txt
+
+
+Display last 5 lines:
+tail -n 5 notes.txt
+
+
+This is especially useful because application errors often appear near the end of log files.
+5. tail -f – Monitor logs continuously
+Important for Data Engineering
+This is one of the most useful commands for Linux server troubleshooting.
+
+Suppose a Spark application is running and continuously writing logs.
+
+You want to watch the log file as new entries appear.
+
+Use:
+tail -f ~/linux-lab/logs/spark.log
+
+
+The terminal remains active and displays new lines as they are added.
+
+To stop monitoring:
+Ctrl + C
+
+
+Difference between tail and tail -f
+Command	Behavior
+tail file.txt	Displays the last lines and exits
+tail -f file.txt	Continues monitoring new lines
+
+Real-world example:
+tail -f /var/log/syslog
+
+
+This monitors new system log entries.
+
+Important: Use tail -F when you also want tail to recover from a log file being rotated or recreated.
+
+Part 3. Editing files in Linux
+Now let's learn two important Linux text editors.
+6. nano – Beginner-friendly text editor
+Nano is a terminal-based text editor.
+
+Create a file:
+nano ~/linux-lab/config/app.conf
+
+
+You will enter the nano editor.
+
+
+
+
+
+
+
+
+itsfoss.com
+
+
+Type the following:
+application_name=SparkProject
+environment=development
+port=8080
+log_level=INFO
+
+
+Now save your file.
+Shortcut	Action
+Ctrl + O	Save file
+Enter	Confirm filename
+Ctrl + X	Exit nano
+Ctrl + W	Search
+Ctrl + K	Cut line
+Ctrl + U	Paste line
+Ctrl + G	Help
+
+Verify:
+cat ~/linux-lab/config/app.conf
+
+
+You should see the four lines you entered.
+7. vim – Advanced text editor
+Vim is a powerful terminal-based text editor.
+
+It is commonly available on Linux servers, so knowing its basic operations is valuable.
+
+Open a file:
+vim ~/linux-lab/config/app.conf
+
+
+
+
+
+
+
+
+
+
+linuxize.com
+
+
+Vim has different modes.
+Mode 1: Normal Mode
+Default mode when Vim opens.
+
+Used for:
+- Navigation.
+- Deleting text.
+- Copying and pasting.
+- Saving and exiting through commands.
+Mode 2: Insert Mode
+Used for writing or editing text.
+
+Press:
+i
+
+
+Now you can type.
+Mode 3: Command-line Mode
+Used for saving and exiting.
+
+Press:
+Esc
+
+
+Then type:
+:w
+
+
+Save the file.
+
+To save and exit:
+:wq
+
+
+To exit without saving:
+:q!
+
+
+Important Vim shortcuts
+Shortcut	Meaning
+i	Insert mode
+Esc	Return to normal mode
+:w	Save
+:q	Quit
+:wq	Save and quit
+:q!	Quit without saving
+dd	Delete current line
+yy	Copy current line
+p	Paste
+/word	Search for word
+gg	Go to first line
+G	Go to last line
+
+Interview question: What is the difference between nano and Vim?
+
+Answer:
+
+Nano is a simple terminal text editor with visible keyboard shortcuts, while Vim is a modal text editor with more advanced navigation and editing features.
+Part 4. Standard Input and Output in Linux
+This is an important concept for shell scripting and Data Engineering.
+8. What is Standard Input, Output and Error?
+Linux programs generally work with three standard data streams.
+
+
+
+
+
+
+
+
+hrz.tu-darmstadt.de
+
+
+Stream	File descriptor	Meaning
+stdin	0	Standard input
+stdout	1	Standard output
+stderr	2	Standard error
+
+Let's understand with an example.
+
+When you execute:
+cat notes.txt
+
+
+- Input: notes.txt
+- Output: File contents displayed on terminal.
+- Error: If the file doesn't exist, Linux displays an error.
+A. Standard Input (stdin)
+Standard input is the data received by a program.
+
+Example:
+cat < notes.txt
+
+
+Here, the contents of notes.txt are provided as input to cat.
+B. Standard Output (stdout)
+Standard output is the normal output generated by a command.
+
+Example:
+ls
+
+
+The directory listing is printed on the terminal.
+
+We can redirect that output into a file.
+9. Output Redirection (>)
+The > operator sends command output into a file.
+
+Example:
+echo "Hello Linux" > output.txt
+
+
+Now check:
+cat output.txt
+
+
+Output:
+Hello Linux
+
+
+Important: > overwrites existing file contents.
+
+For example:
+echo "New content" > output.txt
+
+
+The previous content is replaced.
+10. Append Redirection (>>)
+The >> operator adds new content at the end of a file without removing the existing content.
+
+Example:
+echo "First line" > output.txt
+
+echo "Second line" >> output.txt
+
+echo "Third line" >> output.txt
+
+
+Check:
+cat output.txt
+
+
+Output:
+First line
+Second line
+Third line
+
+
+Difference between > and >>
+Operator	Behavior
+>	Overwrites file
+>>	Appends to file
+
+11. Error Redirection (2>)
+Suppose you execute:
+ls /wrongdirectory
+
+
+Linux displays an error.
+
+You can redirect that error into a file:
+ls /wrongdirectory 2> error.log
+
+
+Check:
+cat error.log
+
+
+Now the error message is stored inside the file instead of being displayed normally on the terminal.
+Redirect both output and errors
+ls /etc /wrongdirectory > result.log 2>&1
+
+
+Here:
+- > redirects normal output.
+- 2>&1 redirects errors to the same destination as standard output.
+This is useful when saving complete command output for troubleshooting.
+12. Pipe (|)
+A pipe connects the output of one command to the input of another command.
+
+Example:
+ls /etc | less
+
+
+What happens?
+1. ls /etc lists files.
+2. The pipe sends the listing to less.
+3. less displays the listing page by page.
+Another example:
+ps aux | grep python
+
+
+This filters process output to find entries containing python.
+
+Remember:
+- > = Save output by overwriting.
+- >> = Append output.
+- 2> = Redirect errors.
+- | = Pass output to another command.
+
+Part 5. Real-World Data Engineering Practical
+Practical Lab 2 – File Operations and Editors
+Let's simulate a Spark application generating logs.
+
+Our project structure:
+linux-lab/
+├── files/
+│   └── notes.txt
+├── config/
+│   └── app.conf
+└── logs/
+    └── spark.log
+
+
+Step 1. Create a test log file
+Execute:
+cd ~/linux-lab
+
+cat > logs/spark.log <<EOF
+2026-11-23 10:00:00 INFO Spark application started
+2026-11-23 10:01:00 INFO Loading employee data
+2026-11-23 10:02:00 INFO Reading CSV file
+2026-11-23 10:03:00 ERROR File not found
+2026-11-23 10:04:00 INFO Application stopped
+EOF
+
+
+This creates a log file with five entries.
+Step 2. Read the complete log
+cat logs/spark.log
+
+
+Step 3. Display the first two lines
+head -n 2 logs/spark.log
+
+
+Step 4. Display the last two lines
+tail -n 2 logs/spark.log
+
+
+Step 5. Search for an error using grep
+grep "ERROR" logs/spark.log
+
+
+Expected output:
+2026-11-23 10:03:00 ERROR File not found
+
+
+We will study grep in detail in our search and utilities lesson.
+Step 6. Save output into another file
+grep "ERROR" logs/spark.log > logs/error_report.txt
+
+
+Check:
+cat logs/error_report.txt
+
+
+Step 7. Append another log entry
+echo "2026-11-23 10:05:00 INFO Application completed" >> logs/spark.log
+
+
+Verify:
+tail -n 3 logs/spark.log
+
+
+Step 8. Monitor logs continuously
+Open your first Ubuntu terminal:
+tail -f ~/linux-lab/logs/spark.log
+
+
+Keep it running.
+
+Open another Ubuntu terminal and execute:
+echo "2026-11-23 10:06:00 INFO New data received" >> ~/linux-lab/logs/spark.log
+
+
+Go back to your first terminal.
+
+You will see the new log entry appear automatically!
+
+Press Ctrl + C to stop monitoring.

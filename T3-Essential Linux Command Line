@@ -1,0 +1,420 @@
+
+Part 1. What is the Linux Command Line?
+The Linux Command Line is a text-based interface through which users interact with the operating system.
+
+Instead of clicking buttons, we type commands.
+
+For example:
+mkdir project
+
+
+This creates a directory named project.
+pwd
+
+
+This displays your current working directory.
+ls
+
+
+This displays files and directories.
+
+
+
+
+
+
+
+
+cbtamamr.weebly.com
+
+
+Real company example:
+
+Suppose your manager asks:
+
+"Create a directory for the Spark application and store its logs separately."
+
+You can do this directly through Linux commands without opening a graphical file manager.
+Part 2. Understanding Linux Command Structure
+1. Command, options and arguments
+Every Linux command can contain three components.
+ls -lah /home
+
+
+Let's break it down:
+ls
+
+Command
+
+
+-lah
+
+Options
+
+
+/home
+
+Argument
+
+
+
+- ls: List files and directories.
+- -l: Long listing format.
+- -a: Include hidden files.
+- -h: Human-readable file sizes.
+- /home: Directory to inspect.
+
+Other examples:
+mkdir -p project/data
+
+
+- Command: mkdir
+- Option: -p
+- Argument: project/data
+Remember: A command tells Linux what to do, options modify its behavior, and arguments specify what it should operate on.
+Part 3. Linux Paths
+Before learning commands, understand paths.
+
+A path tells Linux where a file or directory is located.
+
+There are two important types.
+2. Absolute Path
+An absolute path starts from the root directory /.
+
+Example:
+/home/vboxuser/linux-lab
+
+
+It identifies the location from the root, regardless of your current directory.
+3. Relative Path
+A relative path starts from your current working directory.
+
+Suppose your current directory is:
+/home/vboxuser
+
+
+Then:
+cd linux-lab
+
+
+moves you to:
+/home/vboxuser/linux-lab
+
+
+
+
+
+
+
+
+
+
+learnubuntu.com
+
+
+Important path symbols
+Symbol	Meaning
+/	Root directory
+~	Current user's home directory
+.	Current directory
+..	Parent directory
+-	Previous working directory with cd -
+
+Examples:
+cd ~
+cd /
+cd ..
+cd .
+cd -
+
+
+Let's understand:
+cd ..
+
+
+Moves one level up.
+cd ../..
+
+
+Moves two levels up.
+cd ~
+
+
+Takes you to your home directory.
+Part 4. Essential Linux Commands
+Now we will learn the commands from your Excel roadmap.
+4. Navigation Commands
+A. pwd – Present Working Directory
+Purpose: Shows your current location.
+pwd
+
+
+Example output:
+/home/vboxuser
+
+
+When to use it?
+
+When you are working on a Linux server and don't know which directory you are currently inside.
+B. ls – List
+Purpose: Displays files and directories.
+ls
+
+
+Important variations:
+Command	Purpose
+ls	Basic listing
+ls -l	Detailed listing
+ls -a	Hidden files
+ls -h	Human-readable sizes when used with a size-display format
+ls -lh	Detailed listing with readable sizes
+ls -lah	Detailed listing including hidden files
+
+Example:
+ls -lah ~/linux-lab
+
+
+C. cd – Change Directory
+Purpose: Move between directories.
+cd /etc
+
+
+Move to configuration directory.
+cd /home/vboxuser
+
+
+Move to your home directory's parent location.
+cd ~
+
+
+Move directly to your home directory.
+cd ..
+
+
+Move one directory backward in the hierarchy.
+Part 5. Directory Management
+5. mkdir – Make Directory
+Purpose: Create a directory.
+
+Example:
+mkdir project
+
+
+Creates:
+project/
+
+
+What is mkdir -p?
+Suppose you want to create:
+company/project/spark/logs
+
+
+You can execute:
+mkdir -p company/project/spark/logs
+
+
+The -p option creates missing parent directories as required.
+
+Without -p, creating nested directories fails if their parents don't already exist.
+
+Company example:
+
+A Data Engineering project may use this structure:
+SparkProject/
+    ├── input/
+    ├── output/
+    ├── logs/
+    ├── config/
+    └── scripts/
+
+
+We can create it with:
+mkdir -p SparkProject/{input,output,logs,config,scripts}
+
+
+This is called brace expansion in Bash.
+6. rmdir – Remove Empty Directory
+Purpose: Removes an empty directory.
+rmdir project
+
+
+Important: It won't remove a directory containing files.
+
+For now, use rmdir for practice. We will learn safe file deletion separately.
+Part 6. File Management
+7. touch – Create an Empty File
+touch notes.txt
+
+
+Creates an empty file if it doesn't exist.
+
+You can create multiple files:
+touch file1.txt file2.txt file3.txt
+
+
+8. cp – Copy Files
+Purpose: Copies files or directories.
+cp notes.txt notes_backup.txt
+
+
+Original file:
+notes.txt
+
+
+Copied file:
+notes_backup.txt
+
+
+Copy a file to another directory:
+cp notes.txt ~/linux-lab/backup/
+
+
+Copy a directory recursively:
+cp -r project project_backup
+
+
+Here, -r means recursive.
+9. mv – Move or Rename
+Purpose: Moves or renames files and directories.
+
+Rename:
+mv notes.txt README.txt
+
+
+Move:
+mv README.txt ~/linux-lab/backup/
+
+
+Difference:
+Command	Purpose
+cp	Creates another copy
+mv	Moves or renames the original
+
+10. rm – Remove Files
+Purpose: Deletes files.
+rm notes.txt
+
+
+Safer interactive version:
+rm -i notes.txt
+
+
+Linux asks you for confirmation.
+
+Remove an empty directory:
+rmdir project
+
+
+Remove a directory containing files:
+rm -r project
+
+
+Important safety warning
+Never experiment with these commands on important files:
+rm -rf /
+rm -rf *
+
+
+They can cause serious data loss. Always check your current directory using pwd before deleting anything.
+Part 7. Additional Important Commands
+11. file – Identify File Type
+file notes.txt
+
+
+It identifies the type of a file.
+
+Examples:
+file /etc/passwd
+file /bin/bash
+
+
+12. stat – File Information
+stat notes.txt
+
+
+It provides detailed information:
+- File size.
+- Permissions.
+- Inode number.
+- Owner.
+- Access time.
+- Modification time.
+We will study inode and file metadata in more detail in the links lesson.
+Part 8. Real-World Practical Lab
+Practical Lab 2 – File Operations and Navigation
+Now let's perform an actual company-style project folder creation.
+Scenario
+Your manager asks you to create a project directory for a Spark Data Processing application.
+
+Required structure:
+Spark-Data-Engineering/
+│
+├── input/
+│
+├── output/
+│
+├── logs/
+│
+├── config/
+│
+├── scripts/
+│
+└── README.txt
+
+
+Step 1. Go to your home directory
+cd ~
+
+
+Step 2. Create the project
+mkdir -p Spark-Data-Engineering/{input,output,logs,config,scripts}
+
+
+Step 3. Create README file
+touch Spark-Data-Engineering/README.txt
+
+
+Step 4. Navigate inside the project
+cd Spark-Data-Engineering
+
+
+Step 5. Verify the directory structure
+ls -lah
+
+
+If the tree command is already installed, you can also execute:
+tree
+
+
+Expected structure:
+Spark-Data-Engineering/
+├── README.txt
+├── config/
+├── input/
+├── logs/
+├── output/
+└── scripts/
+
+
+Step 6. Create test files
+touch input/employee.csv
+touch config/spark.conf
+touch logs/spark.log
+touch scripts/process.py
+
+
+Step 7. Copy a file
+cp input/employee.csv input/employee_backup.csv
+
+
+Step 8. Rename a file
+mv input/employee_backup.csv input/employee_copy.csv
+
+
+Step 9. Check the structure
+ls -R
+
+
+-R means recursive listing.
+
+You should now have a basic project directory ready for future Spark development.

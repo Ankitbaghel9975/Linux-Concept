@@ -1,0 +1,434 @@
+
+Linux Installation, Boot Process and Filesystem Hierarchy
+Lesson 02
+Beginner to Intermediate
+
+
+In this lesson, we will understand how Linux starts when you switch on your computer, how Ubuntu runs inside VirtualBox, and how Linux organizes its files and directories.
+
+Why is this important for Data Engineering?
+
+Suppose your manager gives you access to a Linux server running Hadoop or Spark. You need to know:
+- Where are configuration files stored?
+- Where are application logs stored?
+- Where are user files stored?
+- Where can you check system information?
+- How does the Linux server start?
+These are real-world Linux administration skills.
+Part 1. Understanding Virtual Machines
+1. What is a Virtual Machine (VM)?
+A Virtual Machine is a software-based computer that runs inside another physical computer.
+
+For example, your current environment:
+
+
+You have:
+Component	Your environment
+Host OS	Windows
+Virtualization software	Oracle VirtualBox
+Guest OS	Ubuntu Linux
+Virtual machine	Your Ubuntu VM
+Terminal	Ubuntu command line
+
+Hinglish: Tumhara actual laptop Windows par chal raha hai. VirtualBox ke andar humne ek alag virtual computer banaya hai jisme Ubuntu Linux chal raha hai.
+Why do companies use VMs?
+1. Testing different operating systems.
+2. Running multiple servers on one physical machine.
+3. Creating development environments.
+4. Testing applications before production.
+5. Learning server administration safely.
+For example, you can run Ubuntu, Hadoop and Spark inside a VM without replacing Windows.
+2. What is a Hypervisor?
+A Hypervisor is software that creates and manages virtual machines.
+
+Two major types:
+Type	Explanation	Example
+Type 1	Runs directly on hardware	VMware ESXi, Hyper-V Server
+Type 2	Runs on an existing OS	VirtualBox, VMware Workstation
+
+Your VirtualBox is a Type 2 hypervisor.
+Part 2. Linux Boot Process
+3. What happens when you switch on a Linux computer?
+This is called the Boot Process.
+
+The boot process is the sequence of steps through which a computer starts its operating system.
+
+
+medium.com
+
+
+Understand these six stages:
+1. BIOS / UEFI
+   
+   When you power on your computer, firmware initializes the hardware and performs startup checks.
+2. POST (Power-On Self-Test)
+   
+   Checks essential hardware components such as RAM and CPU initialization.
+3. GRUB (Bootloader)
+   
+   GRUB loads the selected operating system's kernel. It can also show a menu for selecting different boot entries.
+4. Linux Kernel
+   
+   The kernel initializes hardware, memory management and other core system functionality.
+5. Initramfs
+   
+   A temporary initial filesystem containing tools and drivers needed during early boot, including help finding and mounting the real root filesystem.
+6. systemd (PID 1)
+   
+   The system's initial userspace process starts services and brings the system to its configured operating state.
+Important interview question
+What is GRUB?
+
+Answer:
+
+GRUB stands for Grand Unified Bootloader. It is a bootloader used by many Linux distributions to load the Linux kernel during the boot process.
+What is systemd?
+Systemd is an initialization and service management system used by Ubuntu.
+
+It manages:
+- System services.
+- Background processes.
+- Startup services.
+- System targets.
+- Service dependencies.
+Example:
+systemctl status ssh
+
+
+This command checks the SSH service status.
+
+We will study systemctl in detail on Day 2.
+4. BIOS vs UEFI
+
+
+
+
+
+
+
+
+
+
+BIOS
+- Older firmware interface.
+- Uses traditional boot mechanisms.
+- Commonly associated with MBR booting.
+
+
+
+
+
+
+
+
+
+
+
+UEFI
+- Modern firmware interface.
+- Supports GPT booting.
+- Can use Secure Boot.
+
+
+Remember:
+- BIOS = Basic Input/Output System.
+- UEFI = Unified Extensible Firmware Interface.
+- Both initialize hardware and help start the operating system.
+
+Part 3. Linux Filesystem Hierarchy
+This is one of the most important parts of today's lesson.
+5. What is a Linux filesystem?
+A filesystem is a method used by an operating system to organize and manage files and directories on storage devices.
+
+Linux uses a hierarchical directory structure.
+
+The most important concept:
+
+Linux starts its directory structure from / (root directory).
+
+
+
+
+
+
+
+
+promleeblog.com
+
+
+Think of / as the main folder containing other directories.
+
+Let's understand the important directories.
+6. Important Linux directories
+These directories are frequently used by Linux administrators and Data Engineers.
+Directory	Purpose	Real-world example
+/	Main root directory	Starting point of filesystem
+/home	Normal users' personal directories	/home/vboxuser
+/root	Home directory of root user	Root user's personal files
+/etc	System configuration files	Application configurations
+/var	Frequently changing data	Logs and application data
+/usr	User applications and utilities	Programs and libraries
+/tmp	Temporary files	Temporary processing files
+/bin	Essential user commands	ls, cp, cat
+/sbin	System administration utilities	System maintenance commands
+/opt	Optional third-party software	Manually installed applications
+/dev	Device files	Disk and terminal devices
+/proc	Virtual filesystem with process and kernel information	CPU and memory information
+
+Let's understand the most important ones in more detail.
+A. / – Root directory
+
+
+
+
+
+
+
+
+cooprobo.readthedocs.io
+
+
+It is the starting point of the Linux filesystem.
+
+For example:
+/
+├── home
+├── etc
+├── var
+├── usr
+├── tmp
+├── dev
+├── proc
+├── opt
+└── root
+
+
+Every directory in the Linux filesystem exists under /.
+
+Important: / and /root are different.
+- / = Main filesystem directory.
+- /root = Home directory of the root administrator.
+B. /home – User directories
+Every normal user generally has a personal directory under /home.
+
+For example:
+/home/
+    ├── vboxuser/
+    ├── developer/
+    └── analyst/
+
+
+In your Ubuntu system, your personal directory is likely:
+/home/vboxuser
+
+
+You can check:
+echo $HOME
+
+
+C. /etc – Configuration files
+This directory is extremely important for Linux administration.
+
+It stores system-wide configuration files.
+
+Examples:
+/etc/
+    ├── hostname
+    ├── hosts
+    ├── passwd
+    ├── group
+    ├── ssh/
+    └── fstab
+
+
+What are these files?
+File	Purpose
+/etc/hostname	System hostname
+/etc/hosts	Local hostname mapping
+/etc/passwd	User account information
+/etc/group	Group information
+/etc/fstab	Filesystem mount configuration
+
+Data Engineering example:
+
+When configuring Hadoop, we work with configuration files such as:
+core-site.xml
+hdfs-site.xml
+yarn-site.xml
+
+
+These are application configuration files, often stored in application-specific directories rather than directly inside /etc.
+D. /var – Variable data
+This directory contains data that changes frequently.
+
+Examples:
+/var/
+    ├── log/
+    ├── cache/
+    ├── lib/
+    └── tmp/
+
+
+Most important:
+/var/log
+
+
+It contains system and application logs.
+
+Company example:
+
+Suppose your Hadoop service fails.
+
+You may need to inspect the relevant application logs to understand why it failed.
+
+Remember:
+- /etc = Configuration.
+- /var/log = Logs.
+E. /usr – Applications and utilities
+This directory contains many user-space programs, libraries and shared resources.
+
+Examples:
+/usr/
+    ├── bin/
+    ├── sbin/
+    ├── lib/
+    └── share/
+
+
+For example:
+/usr/bin/python3
+/usr/bin/java
+
+
+F. /tmp – Temporary files
+Stores temporary files.
+
+Example:
+touch /tmp/demo.txt
+
+
+Temporary files may be removed automatically depending on system cleanup policies.
+G. /opt – Optional software
+Often used for additional third-party software and manually installed application packages.
+
+For example, you might install an application under:
+/opt/my-application/
+
+
+H. /dev – Device files
+Linux represents devices through special files.
+
+Examples:
+/dev/sda
+/dev/null
+/dev/zero
+/dev/tty
+
+
+For example:
+echo "Hello" > /dev/null
+
+
+The output is discarded.
+I. /proc – Process and kernel information
+This is a virtual filesystem.
+
+It provides information about running processes and the kernel.
+
+Examples:
+/proc/cpuinfo
+/proc/meminfo
+/proc/uptime
+
+
+Run:
+cat /proc/cpuinfo
+
+
+It displays processor information.
+
+Run:
+cat /proc/meminfo
+
+
+It displays memory information.
+
+Important: /proc is not an ordinary directory containing permanently stored files. Much of its content is generated dynamically by the kernel.
+
+Part 4. Practical Lab – Explore Your Ubuntu System
+Now we will perform the first official practical lab from your Excel workbook.
+Practical Lab 1 – Filesystem Tour
+7. Execute these commands
+Open Ubuntu terminal.
+
+Step 1: Check your current directory
+pwd
+
+
+Expected output will look similar to:
+/home/vboxuser
+
+
+Step 2: Explore the root directory
+ls -lah /
+
+
+This displays the contents of /, including hidden entries, permissions and file sizes.
+
+Step 3: Explore configuration files
+ls -lah /etc
+
+
+Step 4: Explore user directories
+ls -lah /home
+
+
+Step 5: Explore system logs
+ls -lah /var/log
+
+
+Step 6: Check disk space
+df -h
+
+
+Explanation:
+- df = Disk filesystem.
+- -h = Human-readable format.
+It shows filesystem capacity, used space and available space.
+
+Step 7: Check storage devices
+lsblk
+
+
+This displays block devices such as disks and partitions.
+
+Step 8: Check RAM
+free -h
+
+
+It displays total, used and available memory.
+
+Step 9: Check CPU information
+cat /proc/cpuinfo
+
+
+Step 10: Check Ubuntu version
+cat /etc/os-release
+
+
+Part 5. Understand the practical commands
+Before moving forward, understand what each command tells you.
+Command	What you learn
+pwd	Current working directory
+ls -lah /	Root directory contents
+ls /etc	Configuration files
+df -h	Disk space usage
+lsblk	Disks and partitions
+free -h	RAM usage
+cat /proc/cpuinfo	CPU details
+cat /etc/os-release	Ubuntu version
+
+Important interview difference:
+- df -h tells you how much filesystem storage is used and available.
+- free -h tells you how much RAM is used and available.
+- lsblk shows the block storage devices and their partition structure.

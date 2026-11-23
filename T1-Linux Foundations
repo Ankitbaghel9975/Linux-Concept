@@ -1,0 +1,263 @@
+
+Topic 1: What is Linux?
+1. First understand what an Operating System is
+Imagine you have a laptop.
+
+Your laptop contains:
+- CPU – processes instructions.
+- RAM – temporarily stores running data.
+- Hard Disk – permanently stores data.
+- Keyboard and Mouse – input devices.
+- Monitor – output device.
+But how do these hardware components communicate with applications?
+
+We need an Operating System (OS).
+
+An Operating System is system software that manages hardware and software resources and provides an environment to run applications.
+
+
+
+Examples of operating systems:
+- Windows
+- Linux
+- macOS
+- Android
+- iOS
+Simple Hinglish: Operating System ek manager ki tarah hota hai jo computer ke hardware aur software ke beech communication karwata hai.
+2. What is Linux?
+Linux is an open-source, Unix-like operating system family built around the Linux kernel.
+
+It manages:
+- CPU
+- RAM
+- Processes
+- Memory
+- Files
+- Hardware devices
+- Networking
+Example:
+
+When you execute a command:
+mkdir project
+
+
+Linux receives your request, checks permissions, communicates with the filesystem and creates the directory.
+
+You don't directly communicate with hardware. Linux manages those operations.
+3. Linux Architecture
+This is one of the most important concepts in Linux.
+
+
+
+
+
+
+
+
+commons.wikimedia.org
+
+
+Linux architecture has four important layers for our learning:
+Layer	Meaning
+Hardware	CPU, RAM, disk, network devices
+Kernel	Manages hardware and system resources
+Shell / System libraries	Interfaces and services used by programs
+User applications	Commands, browsers, Python, Spark, etc.
+
+Let's understand the three important components.
+A. Kernel
+The kernel is the core component of Linux.
+
+Its responsibilities:
+1. Process management.
+2. Memory management.
+3. Device management.
+4. File system management.
+5. Networking.
+Example:
+
+When you run a Python program, the kernel helps allocate memory and CPU time to execute it.
+
+Remember: Kernel = Core of the operating system.
+B. Shell
+A shell is a command interpreter that accepts commands and executes them by interacting with the operating system.
+
+Example:
+ls
+pwd
+mkdir project
+
+
+When you type a command into Bash, Bash interprets it and requests the required operation from the operating system.
+
+Popular shells:
+Shell	Description
+Bash	Bourne Again Shell
+Zsh	Z Shell
+Sh	Bourne Shell
+Fish	Friendly Interactive Shell
+
+We will mainly use Bash.
+C. User Space
+User space is where normal applications and processes run with restricted privileges compared with the kernel.
+
+Examples:
+- Python
+- Java
+- Hadoop
+- Spark
+- Browser
+- Text editors
+Company example: When you execute a Spark application, Spark runs in user space, while the Linux kernel manages its CPU, memory and other system resources.
+4. Linux vs Windows
+Feature	Linux	Windows
+Source code	Generally open source	Proprietary
+Interface	CLI and GUI	GUI and CLI
+Customization	Highly customizable	More restricted
+Servers	Widely used	Also used
+Package management	apt, dnf, etc.	Winget, etc.
+Permissions	User/group/others	User and ACL-based permissions
+
+Why do companies use Linux?
+- Server management
+- Cloud infrastructure
+- Big Data processing
+- Hadoop and Spark
+- Docker and Kubernetes
+- Automation
+- Networking
+Since you are learning Data Engineering, Linux is especially important.
+
+For example:
+
+
+
+
+
+
+
+
+docs.posit.co
+
+
+A typical Data Engineering environment:
+1. Linux server runs Hadoop.
+2. HDFS stores distributed data.
+3. YARN manages cluster resources.
+4. Spark processes data.
+5. Hive provides SQL-based data querying.
+Linux is the foundation on which many of these services operate.
+5. What is a Linux Distribution?
+This is another important interview question.
+
+Linux kernel alone is not a complete user-friendly operating system environment.
+
+A Linux distribution combines the Linux kernel with system utilities, package management, libraries and applications.
+
+Examples:
+
+
+
+
+
+
+
+
+
+
+Ubuntu
+
+Beginner friendly; commonly used on servers and desktops.
+
+
+
+
+
+
+
+
+
+
+
+Red Hat Enterprise Linux
+
+Enterprise Linux distribution.
+
+
+
+
+
+
+
+
+
+
+
+Debian
+
+Stable community distribution.
+
+
+
+
+
+
+
+
+
+
+
+CentOS Stream
+
+Enterprise Linux development stream.
+
+
+You are currently using Ubuntu inside VirtualBox.
+
+6. Practical Implementation – Ubuntu
+Now it's your turn.
+
+Open your Ubuntu terminal.
+
+Execute these commands one by one.
+
+Command 1 – Check Linux kernel information
+uname -a
+
+
+Purpose: Displays kernel and system information.
+
+Command 2 – Check your hostname
+hostnamectl
+
+
+Purpose: Displays computer identification and operating system information.
+
+Command 3 – Check current user
+whoami
+
+
+Purpose: Shows which user is currently logged in.
+
+Command 4 – Check user and group IDs
+id
+
+
+Purpose: Displays your user ID (UID) and group IDs (GIDs).
+
+Command 5 – Check system uptime
+uptime
+
+
+Purpose: Shows how long your computer has been running and system load averages.
+
+Command 6 – Check Ubuntu version
+cat /etc/os-release
+
+
+Purpose: Displays operating system details.
+
+You can also try:
+lsb_release -a
+
+
