@@ -1,0 +1,275 @@
+1. Hard links and symbolic links
+First, understand this:
+
+A link is a way to access a file through another name or path.
+
+Linux supports two main types:
+- Hard link
+- Soft link (symbolic link)
+A. Hard link
+A hard link is another filename that points to the same underlying file data.
+
+Let's practise:
+mkdir -p ~/linux-lab/links
+cd ~/linux-lab/links
+
+echo "Learning Linux Hard Links" > original.txt
+
+ln original.txt hardlink.txt
+
+
+Now check:
+ls -li
+
+
+Example output:
+12345 -rw-rw-r-- 2 vboxuser vboxuser 27 original.txt
+12345 -rw-rw-r-- 2 vboxuser vboxuser 27 hardlink.txt
+
+
+Notice:
+- Both files have the same inode number.
+- Both filenames access the same file data.
+- The link count is 2.
+Check the contents:
+cat original.txt
+cat hardlink.txt
+
+
+Now modify one:
+echo "New content" >> hardlink.txt
+cat original.txt
+
+
+You will see the new content through original.txt too.
+
+Why? Both names point to the same underlying data.
+B. Symbolic link (soft link)
+A symbolic link is like a shortcut. It points to another file's path.
+
+Create one:
+ln -s original.txt softlink.txt
+
+
+Check:
+ls -l
+
+
+Example:
+original.txt
+hardlink.txt
+softlink.txt -> original.txt
+
+
+Check the inode numbers:
+ls -li
+
+
+The symbolic link has its own inode number.
+
+Now test:
+cat softlink.txt
+
+
+It displays the original file's contents.
+Hard link vs symbolic link
+Feature	Hard link	Symbolic link
+Inode	Same as original	Different
+Points to	File data	File path
+Original deleted	Data remains accessible through hard link	Link can become broken
+Directories	Generally not allowed	Allowed
+Across filesystems	No	Yes
+
+Interview question: What happens if we delete the original file?
+- Hard link: the data remains accessible through the hard link.
+- Symbolic link: it may become a broken link if its target no longer exists.
+2. Understanding inode
+An inode is a Linux filesystem structure that stores information about a file.
+
+It contains metadata such as:
+- File permissions
+- Owner and group
+- File size
+- Timestamps
+- Pointers to the file's data blocks
+It does not store the filename itself.
+
+Run:
+ls -i original.txt hardlink.txt softlink.txt
+
+
+Check detailed information:
+stat original.txt
+
+
+Remember:
+
+Filename → inode → file data
+
+This is an important Linux filesystem concept.
+3. Searching files using find
+Suppose you have thousands of log files and want to find one particular file.
+
+Use find.
+
+First, create practice files:
+mkdir -p ~/linux-lab/search/logs
+
+touch ~/linux-lab/search/logs/app.log
+touch ~/linux-lab/search/logs/error.log
+touch ~/linux-lab/search/logs/access.log
+touch ~/linux-lab/search/config.txt
+
+
+Find all files
+find ~/linux-lab -type f
+
+
+Find a particular filename
+find ~/linux-lab -name "error.log"
+
+
+Find all .log files
+find ~/linux-lab -type f -name "*.log"
+
+
+Case-insensitive search
+find ~/linux-lab -iname "*.LOG"
+
+
+Find files larger than 1 MB
+find ~/linux-lab -type f -size +1M
+
+
+Find files modified in the last 1 day
+find ~/linux-lab -type f -mtime -1
+
+
+Here, -mtime -1 means modified less than one 24-hour period ago.
+4. Understanding locate
+Another command is:
+locate error.log
+
+
+Difference:
+find	locate
+Searches the filesystem directly	Searches an indexed database
+Can be slower	Usually faster
+Finds current filesystem matches	May show outdated results
+Does not require an index database	Requires an index database
+
+If locate is not installed:
+sudo apt update
+sudo apt install plocate
+
+
+On systems using plocate, update its database with:
+sudo updatedb
+
+
+Then:
+locate error.log
+
+
+5. Disk usage: df vs du
+This is especially important when working with Hadoop and Spark.
+A. df — disk filesystem space
+It tells us how much space is used and available on mounted filesystems.
+df -h
+
+
+For filesystem types:
+df -hT
+
+
+Example:
+Filesystem      Type  Size  Used  Avail  Use%
+/dev/sda1       ext4   50G   20G    28G   42%
+
+
+Meaning:
+- Size: Total filesystem size
+- Used: Space already occupied
+- Avail: Available space
+- Use%: Percentage used
+B. du — directory usage
+It tells us how much disk space a particular file or directory uses.
+du -sh ~/linux-lab
+
+
+Check each immediate subdirectory:
+du -h --max-depth=1 ~/linux-lab
+
+
+Compare:
+Command	Purpose
+df -h	Overall filesystem space
+du -sh folder	Total size of a folder
+du -ah folder	Sizes of files and folders
+
+Real-world example: If your Ubuntu VM says disk usage is 90%, use df -h to identify the full filesystem, then du to investigate which directories are consuming space.
+6. Archive and compression
+Suppose you have a project folder containing scripts, configuration files and logs. You want to create a backup.
+
+Linux commonly uses tar and gzip.
+A. Create a compressed archive
+Go to your home directory:
+cd ~
+
+
+Create an archive of your practice folder:
+tar -czvf linux-backup.tar.gz linux-lab/
+
+
+Understand the options:
+Option	Meaning
+c	Create archive
+z	Compress using gzip
+v	Show progress/details
+f	Specify archive filename
+
+B. View archive contents
+tar -tzvf linux-backup.tar.gz
+
+
+This lists the contents without extracting them.
+C. Extract the archive
+Create a restore directory:
+mkdir -p ~/linux-lab/restore
+
+
+Extract:
+tar -xzvf linux-backup.tar.gz -C ~/linux-lab/restore/
+
+
+Options:
+- x: Extract
+- z: gzip compression
+- v: Verbose output
+- f: Archive filename
+- -C: Extract into the specified directory
+Check:
+ls ~/linux-lab/restore/
+
+
+D. Using gzip and gunzip
+Compress an individual file:
+echo "This is a backup test" > backup.txt
+
+gzip backup.txt
+
+
+Now the file becomes:
+backup.txt.gz
+
+
+Restore it:
+gunzip backup.txt.gz
+
+
+Now backup.txt is available again.
+
+Important difference:
+- gzip compresses individual files.
+- tar bundles multiple files/directories into an archive.
+- tar -czvf bundles and compresses together.
