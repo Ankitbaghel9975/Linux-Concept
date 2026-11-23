@@ -1,0 +1,227 @@
+What is package management?
+A package is a software application or component distributed in a format that Linux can install and manage.
+
+Examples:
+- git — version control
+- tree — directory structure viewer
+- openssh-server — SSH server
+- python3 — Python interpreter
+- nginx — web server
+A package manager handles tasks such as:
+1. Installing software.
+2. Updating software.
+3. Removing software.
+4. Checking package information.
+5. Managing software dependencies.
+Ubuntu uses APT as its high-level package manager and dpkg as its lower-level package management tool.
+2. What is a repository?
+A repository is a location from which Linux downloads software packages and package information.
+
+Think of it like an app store.
+Ubuntu repositories
+
+Software packages and package information
+
+APT downloads packages
+
+Your Ubuntu system
+
+Installs and manages software
+
+
+For example, when you execute:
+sudo apt install tree
+
+
+APT finds the package in the configured repositories, downloads it and installs it.
+3. Refresh the package index — apt update
+Before installing software, Ubuntu should know which package versions are available in its configured repositories.
+
+Run:
+sudo apt update
+
+
+Understand the command:
+- sudo — run with administrator privileges.
+- apt — Ubuntu's package management command.
+- update — refresh the local package information from repositories.
+Important: apt update does not upgrade your installed applications. It refreshes the package information.
+
+To see why this matters, imagine an app store: first you refresh the list of available apps and versions, then you decide what to install.
+4. Search for a package
+Let's search for the tree package.
+apt search tree
+
+
+This displays packages whose names or descriptions match the search.
+
+For more information about one package:
+apt show tree
+
+
+You may see details such as:
+- Package name
+- Version
+- Description
+- Dependencies
+- Download size
+5. Install a package
+Now install tree:
+sudo apt install tree
+
+
+APT may ask for confirmation:
+Do you want to continue? [Y/n]
+
+
+Type:
+Y
+
+
+Then press Enter.
+What happens during installation?
+1. APT locates the package in configured repositories.
+2. It checks dependencies.
+3. It downloads the required packages.
+4. It installs and configures them.
+5. The software becomes available to use.
+Try:
+tree --version
+
+
+And:
+tree ~/linux-lab
+
+
+If the command displays your directory structure, the installation is working.
+6. Verify installed packages
+There are multiple ways to verify whether a package is installed.
+
+Method 1: Use dpkg
+dpkg -l tree
+
+
+Method 2: Check package details
+dpkg -s tree
+
+
+Method 3: List installed packages
+apt list --installed
+
+
+To filter for tree:
+apt list --installed 2>/dev/null | grep tree
+
+
+Method 4: Check the executable
+which tree
+
+
+This usually prints the location of the command, such as /usr/bin/tree.
+7. Update vs upgrade — very important
+This is a common Linux interview question.
+Command	Meaning
+sudo apt update	Refresh package indexes
+sudo apt upgrade	Upgrade installed packages when updates are available
+sudo apt full-upgrade	Upgrade packages and may install or remove packages to handle dependency changes
+
+For normal system maintenance, you commonly use:
+sudo apt update
+sudo apt upgrade
+
+
+The first command checks the latest package information. The second applies available upgrades.
+
+full-upgrade can make more significant dependency changes, so review its proposed actions before confirming.
+8. Remove software
+Suppose you no longer need tree.
+
+Remove the application:
+sudo apt remove tree
+
+
+This removes the package but may leave its system-wide configuration files.
+
+To remove the package and its package-managed configuration:
+sudo apt purge tree
+
+
+Remove automatically installed dependencies that are no longer needed:
+sudo apt autoremove
+
+
+Before confirming autoremove, review the list carefully.
+
+You can install tree again whenever needed:
+sudo apt install tree
+
+
+9. What are package sources?
+APT gets package information from configured repository sources.
+
+On Ubuntu, inspect the source configuration:
+ls /etc/apt/
+
+
+Also check:
+ls /etc/apt/sources.list.d/
+
+
+Depending on your Ubuntu version, repository definitions may be in:
+- /etc/apt/sources.list
+- Files ending in .list inside /etc/apt/sources.list.d/
+- Files ending in .sources inside /etc/apt/sources.list.d/
+APT stores downloaded repository index information under:
+/var/lib/apt/lists/
+
+
+This is why sudo apt update refreshes information there.
+
+Security rule: Do not add random repositories or install packages from unknown websites. A repository can provide software that runs with powerful system privileges.
+10. APT vs dpkg vs YUM/DNF
+Understand these three names:
+Tool	Common distribution	Purpose
+APT	Ubuntu, Debian	High-level package management
+dpkg	Ubuntu, Debian	Lower-level Debian package management
+YUM/DNF	RHEL family, Fedora	Package management in RPM-based systems
+
+For example:
+- apt install tree installs a package and resolves dependencies.
+- dpkg -i package.deb installs a local Debian package file; you may need to resolve missing dependencies separately.
+- dnf install package-name is a typical command on modern Fedora/RHEL-family systems.
+For your Ubuntu VM, focus on APT and dpkg.
+
+11. Practical lab — install and manage tree
+Perform these steps in your Ubuntu VM.
+
+Step 1: Refresh package information
+sudo apt update
+
+
+Step 2: Search for tree
+apt search tree
+
+
+Step 3: Inspect package information
+apt show tree
+
+
+Step 4: Install it
+sudo apt install tree
+
+
+Step 5: Verify installation
+tree --version
+dpkg -s tree
+which tree
+
+
+Step 6: Display your Linux lab directory
+tree ~/linux-lab
+
+
+Step 7: Check the installed package
+apt list --installed 2>/dev/null | grep tree
+
+
+Don't remove tree yet. We'll use it in later Linux exercises.
