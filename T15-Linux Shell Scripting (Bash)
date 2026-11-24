@@ -1,0 +1,407 @@
+What is shell scripting?
+A shell script is a file containing multiple Linux commands that execute together.
+
+Normally, you execute commands one by one:
+date
+hostname
+whoami
+pwd
+
+
+Instead, you can write all four commands in a single file and execute that file.
+
+This is called shell scripting.
+
+Why is it useful in Data Engineering?
+- Automating Hadoop startup tasks.
+- Checking whether files have arrived.
+- Monitoring server resources.
+- Running backup jobs.
+- Automating repetitive Linux commands.
+- Scheduling scripts using cron.
+2. What is Bash?
+Bash stands for Bourne Again Shell.
+
+It is a command-line shell and scripting language commonly used on Linux.
+
+Check your Bash version:
+bash --version
+
+
+Check the current shell:
+echo $SHELL
+
+
+3. What is a shebang?
+The shebang tells Linux which interpreter should execute the script.
+
+Example:
+#!/bin/bash
+
+
+This should normally be the first line of your Bash script.
+
+Example script:
+#!/bin/bash
+
+echo "Hello Linux"
+echo "Welcome to Bash scripting"
+
+
+Create the file:
+mkdir -p ~/linux-lab/scripts
+nano ~/linux-lab/scripts/hello.sh
+
+
+Paste the script, save it, and exit.
+
+Run it:
+bash ~/linux-lab/scripts/hello.sh
+
+
+Expected output:
+Hello Linux
+Welcome to Bash scripting
+
+
+4. Variables in Bash
+A variable stores a value that can be reused.
+
+Example:
+#!/bin/bash
+
+name="Ankit"
+course="Data Engineering"
+
+echo "My name is $name"
+echo "I am learning $course"
+
+
+Output:
+My name is Ankit
+I am learning Data Engineering
+
+
+Important rules:
+- No spaces around =.
+- Use $variable to access its value.
+- Variable names are case-sensitive.
+Correct:
+name="Ankit"
+
+
+Incorrect:
+name = "Ankit"
+
+
+5. User input
+You can take input from a user using read.
+#!/bin/bash
+
+echo "Enter your name:"
+read name
+
+echo "Welcome $name"
+
+
+Run:
+bash hello.sh
+
+
+The script asks for your name and prints a welcome message.
+6. Command-line arguments
+Arguments allow you to pass values to a script when executing it.
+
+Example:
+#!/bin/bash
+
+echo "First argument: $1"
+echo "Second argument: $2"
+echo "All arguments: $@"
+echo "Total arguments: $#"
+
+
+Save as arguments.sh.
+
+Run:
+bash arguments.sh Ankit DataEngineering
+
+
+Expected output:
+First argument: Ankit
+Second argument: DataEngineering
+All arguments: Ankit DataEngineering
+Total arguments: 2
+
+
+Important argument variables:
+Variable	Meaning
+$0	Script name
+$1	First argument
+$2	Second argument
+$@	All arguments
+$#	Number of arguments
+
+Real-world example: You can pass a source folder and destination folder to a backup script.
+7. Exit codes
+An exit code tells whether a command or script completed successfully.
+- 0 means success.
+- Non-zero means an error or another unsuccessful condition.
+Example:
+mkdir -p ~/linux-lab/test-folder
+
+echo $?
+
+
+Expected output:
+0
+
+
+$? stores the exit status of the most recently executed command.
+
+Example script:
+#!/bin/bash
+
+echo "Checking Linux script"
+
+if [ -d "$HOME/linux-lab" ]; then
+    echo "Directory exists"
+    exit 0
+else
+    echo "Directory does not exist"
+    exit 1
+fi
+
+
+Run it:
+bash check.sh
+echo $?
+
+
+8. Conditional statements – if and else
+Conditions allow scripts to make decisions.
+
+Example:
+#!/bin/bash
+
+number=10
+
+if [ "$number" -gt 5 ]; then
+    echo "Number is greater than 5"
+else
+    echo "Number is not greater than 5"
+fi
+
+
+Output:
+Number is greater than 5
+
+
+Important comparison operators:
+Operator	Meaning
+-eq	Equal
+-ne	Not equal
+-gt	Greater than
+-lt	Less than
+-ge	Greater than or equal
+-le	Less than or equal
+
+File and directory conditions:
+Condition	Meaning
+-f file	File exists and is a regular file
+-d directory	Directory exists
+-e path	Path exists
+-r file	File is readable
+-w file	File is writable
+-x file	File is executable
+
+Example:
+if [ -d "$HOME/linux-lab" ]; then
+    echo "Lab directory exists"
+fi
+
+
+9. Loops in Bash
+Loops repeat commands.
+
+For loop
+#!/bin/bash
+
+for number in 1 2 3 4 5
+do
+    echo "Number: $number"
+done
+
+
+Output:
+Number: 1
+Number: 2
+Number: 3
+Number: 4
+Number: 5
+
+
+While loop
+#!/bin/bash
+
+count=1
+
+while [ "$count" -le 5 ]
+do
+    echo "Count: $count"
+    count=$((count + 1))
+done
+
+
+Output:
+Count: 1
+Count: 2
+Count: 3
+Count: 4
+Count: 5
+
+
+Difference:
+- for is useful when iterating over a known list or range.
+- while repeats as long as a condition is true.
+10. Functions in Bash
+A function is a reusable block of commands.
+
+Example:
+#!/bin/bash
+
+greet() {
+    echo "Welcome to Linux"
+}
+
+greet
+greet
+
+
+Output:
+Welcome to Linux
+Welcome to Linux
+
+
+Why use functions?
+
+Suppose your Data Engineering script needs to:
+- Check a directory.
+- Count files.
+- Generate a report.
+You can create a separate function for each task and reuse it.
+11. Script permissions
+To execute a Bash script directly, it needs execute permission.
+
+Check permissions:
+ls -l ~/linux-lab/scripts/hello.sh
+
+
+Give execute permission:
+chmod +x ~/linux-lab/scripts/hello.sh
+
+
+Execute directly:
+~/linux-lab/scripts/hello.sh
+
+
+You can also run it using Bash without adding execute permission:
+bash ~/linux-lab/scripts/hello.sh
+
+
+12. Debugging Bash scripts
+Debugging means finding and fixing errors.
+
+Your Excel roadmap specifically includes two important commands.
+
+Syntax checking:
+bash -n hello.sh
+
+
+This checks the script's syntax without executing its commands. No output usually means the syntax is valid.
+
+Execution tracing:
+bash -x hello.sh
+
+
+This displays commands as Bash executes them.
+
+Example:
++ name=Ankit
++ echo 'Hello Ankit'
+Hello Ankit
+
+
+This helps you understand what happens inside the script.
+13. Main practical lab – Linux automation script
+This practical comes directly from your Excel workbook's Bash Automation Lab.
+
+Requirement: Write a script that:
+1. Prints the current date.
+2. Prints the hostname.
+3. Checks whether ~/linux-lab exists.
+4. Counts .txt files.
+5. Writes the result into report.txt.
+Step 1: Create the script
+nano ~/linux-lab/scripts/system_report.sh
+
+
+Paste this code:
+#!/bin/bash
+
+# Display current date
+echo "Date: $(date)"
+
+# Display hostname
+echo "Hostname: $(hostname)"
+
+# Check directory
+if [ -d "$HOME/linux-lab" ]; then
+    echo "Linux lab directory exists"
+
+    # Count text files, excluding the report itself
+    count=$(find "$HOME/linux-lab" -type f -name "*.txt" \
+        ! -path "$HOME/linux-lab/report.txt" | wc -l)
+
+    echo "Total text files: $count"
+
+    # Generate report
+    {
+        echo "Linux System Report"
+        echo "Date: $(date)"
+        echo "Hostname: $(hostname)"
+        echo "Directory: $HOME/linux-lab"
+        echo "Total text files: $count"
+    } > "$HOME/linux-lab/report.txt"
+
+else
+    echo "Linux lab directory does not exist"
+    exit 1
+fi
+
+
+Step 2: Check syntax
+bash -n ~/linux-lab/scripts/system_report.sh
+
+
+Step 3: Execute script
+bash ~/linux-lab/scripts/system_report.sh
+
+
+Step 4: Read the report
+cat ~/linux-lab/report.txt
+
+
+Step 5: Give execute permission
+chmod +x ~/linux-lab/scripts/system_report.sh
+
+
+Now execute directly:
+~/linux-lab/scripts/system_report.sh
+
+
+Step 6: Debug the script
+bash -x ~/linux-lab/scripts/system_report.sh
+
+
+You have now practised variables, conditions, commands, file tests, exit codes, permissions and debugging in one script.
