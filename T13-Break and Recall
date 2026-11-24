@@ -1,0 +1,41 @@
+goal: Recall what you learned without looking at your previous notes.
+1. Revision checklist
+Try to explain each item in one or two sentences.
+Topic	What you should remember
+Users	whoami, id, groups
+Groups	groupadd, usermod -aG
+Admin access	sudo
+Services	systemctl status, start, stop, enable
+Logs	journalctl, /var/log/
+IP address	ip addr
+Network interface	ip link
+Routing	ip route
+DNS	getent hosts
+Connectivity	ping
+Listening ports	ss -tulpen
+Firewall	UFW, iptables
+SSH	Default port 22
+
+2. Draw a server troubleshooting flow
+Imagine your Linux server is not accessible. Draw this flow in your notebook:
+Problem: Server is not accessible
+
+Check IP and network interface
+
+ip addr · ip link
+
+Check route and connectivity
+
+ip route · ping
+
+Check DNS and service
+
+getent hosts · systemctl status
+
+Check listening ports and firewall
+
+ss -tulpen · sudo ufw status
+
+Inspect logs and identify the issue
+
+journalctl
