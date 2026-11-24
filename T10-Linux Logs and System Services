@@ -1,0 +1,158 @@
+# What is a service in Linux?
+A service is a program that runs in the background and provides functionality to the system or other applications.
+
+Examples:
+Service	Purpose
+SSH	Remote access to Linux
+Nginx	Web server
+MySQL	Database server
+Hadoop	Distributed data processing and storage services
+Docker	Container management
+
+For example, when you start the SSH service, it runs in the background and allows remote connections.
+2. What is systemd?
+systemd is the system and service manager used by Ubuntu.
+
+Think of systemd as a manager that controls background services.
+
+It can:
+- Start services.
+- Stop services.
+- Restart services.
+- Check service status.
+- Start services automatically during boot.
+Linux operating system
+systemd – Service Manager
+
+SSH
+
+Nginx
+
+MySQL
+
+Other services
+
+
+
+3. What is systemctl?
+systemctl is the command used to communicate with systemd and manage services.
+Important commands
+Command	Purpose
+systemctl status ssh	Check SSH status
+sudo systemctl start ssh	Start SSH
+sudo systemctl stop ssh	Stop SSH
+sudo systemctl restart ssh	Restart SSH
+sudo systemctl reload ssh	Reload configuration, if supported
+sudo systemctl enable ssh	Start SSH automatically at boot
+sudo systemctl disable ssh	Disable automatic startup
+systemctl is-active ssh	Check whether service is active
+systemctl is-enabled ssh	Check boot startup setting
+
+Important difference:
+- start starts a service now.
+- enable configures it to start automatically during boot.
+- restart stops and starts it again.
+Practical 1 – Check SSH service
+Run in Ubuntu:
+systemctl status ssh
+
+
+If the service exists, you may see:
+Active: active (running)
+
+
+Other possible states include:
+- inactive – service is not running.
+- failed – service failed to start.
+- not-found – service unit does not exist.
+Don't worry if SSH is not installed on your VM. You can still practise the other commands using existing services.
+Practical 2 – List running services
+systemctl list-units --type=service
+
+
+To see all service units, including inactive ones:
+systemctl list-units --type=service --all
+
+
+4. What are Linux logs?
+Logs are records of events that happen inside a Linux system.
+
+For example:
+- Service started or stopped.
+- Login attempts.
+- Application errors.
+- Network problems.
+- System boot events.
+Imagine your Spark application fails. Logs can help you identify whether the problem came from configuration, permissions, memory, or another issue.
+Important log locations
+Location	Purpose
+/var/log/	Main Linux log directory
+/var/log/syslog	General system messages on Ubuntu
+/var/log/auth.log	Authentication and login-related events
+/var/log/kern.log	Kernel-related messages, if configured
+
+Inspect the directory:
+ls -lah /var/log/
+
+
+5. What is journalctl?
+journalctl is used to view logs collected by the systemd journal.
+Command	Purpose
+journalctl	View journal logs
+journalctl -n 50	Last 50 log entries
+journalctl -f	Follow new logs live
+journalctl -u ssh	Logs for SSH
+journalctl -b	Logs from current boot
+journalctl -p err	Show error-priority messages
+
+Practical 3 – Read recent logs
+journalctl -n 50
+
+
+Show SSH service logs:
+journalctl -u ssh -n 50
+
+
+Follow logs live:
+journalctl -f
+
+
+Press Ctrl + C to exit live log viewing.
+6. Real-world troubleshooting example
+Suppose your Nginx website is not opening.
+
+A Linux administrator can follow this process:
+systemctl status nginx
+
+
+If the service is failed, inspect its logs:
+journalctl -u nginx -n 50
+
+
+Check configuration:
+sudo nginx -t
+
+
+If the configuration test succeeds and you have made a valid change:
+sudo systemctl restart nginx
+
+
+Then verify:
+systemctl status nginx
+
+
+This is a basic service troubleshooting workflow.
+7. Your practical lab
+Run these commands one by one in Ubuntu:
+systemctl status ssh
+systemctl list-units --type=service
+journalctl -n 50
+journalctl -b
+journalctl -p err
+ls -lah /var/log/
+
+
+If you have Nginx installed, also run:
+systemctl status nginx
+
+
