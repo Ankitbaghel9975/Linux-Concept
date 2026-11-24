@@ -1,0 +1,281 @@
+What is networking?
+Networking means connecting two or more computers so they can communicate and exchange data.
+
+For example, imagine your Data Engineering environment:
+- One machine runs Hadoop NameNode.
+- Another machine runs a DataNode.
+- Another machine runs a Spark application.
+These machines communicate over a network.
+Data Engineering network
+NameNode
+
+HDFS metadata
+
+DataNode
+
+HDFS blocks
+
+Spark application
+
+Processes data across the cluster
+
+
+All machines need working network communication for distributed processing.
+
+2. What is an IP address?
+An IP address is a logical address assigned to a network interface. It helps identify a device on an IP network.
+
+Example IPv4 address:
+192.168.1.10
+
+
+An IPv4 address contains 32 bits, divided into four octets.
+
+Example:
+192 . 168 . 1 . 10
+
+
+Two important types:
+Type	Meaning	Example
+Private IP	Used inside private networks	192.168.1.10
+Public IP	Used for communication over the public internet	Depends on your internet connection
+
+Other important addresses:
+- 127.0.0.1 – loopback address, meaning your own machine.
+- 0.0.0.0 – all IPv4 interfaces when used as a listening address.
+- localhost – normally resolves to a loopback address.
+Practical: Check your IP address
+Run:
+ip addr
+
+
+Shorter output:
+hostname -I
+
+
+Look for an interface such as enp0s3, ens33 or eth0.
+
+Your VirtualBox Ubuntu VM may show an address such as 10.0.2.15, depending on its network configuration.
+3. What is a network interface?
+A network interface is the connection through which your computer communicates with a network.
+
+Common interface names:
+Interface	Meaning
+lo	Loopback interface
+eth0	Traditional Ethernet name
+enp0s3	Common predictable Ethernet name
+wlan0	Traditional Wi-Fi name
+wlp2s0	Common predictable Wi-Fi name
+
+Check interfaces:
+ip link
+
+
+Check IP addresses assigned to them:
+ip addr
+
+
+Remember:
+- ip link shows network interfaces and their link status.
+- ip addr shows interfaces and their IP addresses.
+4. What is a gateway?
+A gateway is a device that forwards network traffic from one network to another.
+
+Think about your Ubuntu VM:
+
+Your VM wants to access a website on the internet. It sends traffic to its default gateway, which forwards it towards the destination.
+Ubuntu VM
+
+Example IP: 192.168.1.10
+
+Default Gateway
+
+Example: 192.168.1.1
+
+Internet
+
+
+The IP addresses here are examples, not necessarily your VM's actual addresses.
+5. What is routing?
+Routing is the process of deciding where network packets should go.
+
+Linux uses a routing table to make these decisions.
+
+Check the routing table:
+ip route
+
+
+Example output:
+default via 192.168.1.1 dev enp0s3
+192.168.1.0/24 dev enp0s3 proto kernel scope link
+
+
+Understand the output:
+Part	Meaning
+default	Default route for destinations without a more specific route
+via 192.168.1.1	Gateway address
+dev enp0s3	Network interface used
+192.168.1.0/24	Local network route
+
+Interview question: What is the difference between an IP address and a gateway?
+
+Answer: An IP address identifies a network interface, while a gateway forwards traffic towards other networks.
+6. What is DNS?
+DNS stands for Domain Name System.
+
+It converts domain names into IP addresses.
+
+For example:
+google.com → IP address
+
+
+Computers use IP addresses to communicate, while humans find domain names easier to remember.
+You enter: example.com
+
+DNS lookup
+
+Finds the corresponding IP address
+
+IP address
+
+The computer can connect to the destination
+
+
+Practical: Test DNS
+getent hosts example.com
+
+
+This asks the system's configured name-service mechanism to resolve the hostname.
+
+If supported on your Ubuntu version:
+resolvectl status
+
+
+This shows DNS configuration and information about network links.
+7. What are TCP and UDP?
+TCP and UDP are transport-layer protocols used for communication between applications.
+TCP	UDP
+Connection-oriented	Connectionless
+Reliable, ordered byte stream	No built-in delivery or ordering guarantee
+Retransmits lost data	Does not provide TCP-style retransmission
+Used by HTTP/HTTPS, SSH	Used by DNS commonly, streaming and other applications
+
+Example:
+- SSH generally uses TCP port 22.
+- HTTPS generally uses TCP port 443.
+- DNS commonly uses UDP port 53, and can also use TCP port 53.
+8. What is ping?
+ping tests whether a destination responds to ICMP Echo Requests.
+
+Run:
+ping -c 4 google.com
+
+
+Explanation:
+- ping – sends connectivity test packets.
+- -c 4 – sends four requests.
+- google.com – destination hostname.
+You can also test a known IP address:
+ping -c 4 8.8.8.8
+
+
+If IP connectivity works but hostname resolution fails, DNS may be the problem.
+
+However, some servers block ICMP, so a failed ping alone does not prove that a service is unavailable.
+9. What is ss?
+ss displays socket information, including network connections and listening ports.
+
+Run:
+ss -tulpen
+
+
+Options:
+Option	Meaning
+-t	TCP sockets
+-u	UDP sockets
+-l	Listening sockets
+-p	Process information, where permitted
+-e	Extended information
+-n	Numeric addresses and ports
+
+Example:
+tcp LISTEN 0 128 0.0.0.0:22
+
+
+This indicates a TCP service listening on port 22 on all IPv4 interfaces.
+10. Practical networking lab
+Run these commands in your Ubuntu VM, one by one:
+ip addr
+
+
+ip link
+
+
+ip route
+
+
+ping -c 4 8.8.8.8
+
+
+ping -c 4 google.com
+
+
+ss -tulpen
+
+
+hostname -I
+
+
+getent hosts example.com
+
+
+resolvectl status
+
+
+If resolvectl is unavailable, skip it and tell me.
+11. Real-world networking troubleshooting
+Imagine your Spark worker cannot communicate with the Hadoop NameNode.
+
+Follow this basic troubleshooting order:
+1. Check the interface
+   ip link
+   ip addr
+   
+   
+   Is the interface up? Does it have an IP address?
+2. Check routing
+   ip route
+   
+   
+   Is the required route available?
+3. Check connectivity
+   ping -c 4 <NameNode-IP>
+   
+   
+   Can the worker reach the NameNode?
+4. Check DNS
+   getent hosts namenode-hostname
+   
+   
+   Does the hostname resolve correctly?
+5. Check the service and port
+   ss -tulpen
+   
+   
+   Is the required application service listening on its expected port?
+
+This helps narrow down whether the issue is related to the interface, route, DNS or service.
+
+12. Interview revision
+Try answering these:
+1. What is an IP address?
+2. What is the difference between a private IP and public IP?
+3. What is a network interface?
+4. What is a default gateway?
+5. What does ip route display?
+6. What is DNS?
+7. What is the difference between TCP and UDP?
+8. What is the purpose of ping?
+9. What is the difference between ip addr and ip link?
+10. What does ss -tulpen show?
+13. Quick quiz
