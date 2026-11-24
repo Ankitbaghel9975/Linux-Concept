@@ -1,0 +1,204 @@
+What is a backup?
+A backup is an extra copy of data stored separately so that you can recover the original data if it is accidentally deleted, corrupted or lost.
+
+Example:
+
+Suppose you have this project folder:
+linux-lab/
+├── config/
+│   └── app.conf
+├── files/
+│   └── employee.txt
+└── logs/
+    └── app.log
+
+
+You create another copy:
+linux-backup/
+├── config/
+│   └── app.conf
+├── files/
+│   └── employee.txt
+└── logs/
+    └── app.log
+
+
+If employee.txt is deleted from the original folder, you can recover it from the backup.
+
+Important: A backup is useful only if you can successfully restore it. Always test recovery.
+2. Backup using rsync
+rsync is a Linux command used to copy and synchronize files and directories.
+
+Basic syntax:
+rsync -av source/ destination/
+
+
+Meaning:
+Option	Purpose
+-a	Archive mode; preserves important file attributes
+-v	Verbose; displays what is copied
+
+Understand the trailing slash
+rsync -av source/ backup/
+
+
+Copies the contents of source into backup.
+rsync -av source backup/
+
+
+Copies the source directory itself into backup.
+
+This small difference is important when creating backups.
+3. Practical Lab – Create and restore a backup
+We will use only sample files inside your home directory. These commands will not modify your system files.
+
+Step 1: Create a sample project
+mkdir -p ~/linux-lab/backup-source/files
+mkdir -p ~/linux-lab/backup
+
+
+Step 2: Create a sample file
+echo "Important employee data" > ~/linux-lab/backup-source/files/employee.txt
+
+
+Check it:
+cat ~/linux-lab/backup-source/files/employee.txt
+
+
+Step 3: Create a backup
+rsync -av ~/linux-lab/backup-source/ ~/linux-lab/backup/
+
+
+Check the backup:
+ls -R ~/linux-lab/backup
+
+
+Step 4: Simulate accidental deletion
+
+We will delete only the sample file we created:
+rm ~/linux-lab/backup-source/files/employee.txt
+
+
+Check that it is missing:
+ls ~/linux-lab/backup-source/files/
+
+
+Step 5: Restore the deleted file
+rsync -av ~/linux-lab/backup/ ~/linux-lab/backup-source/
+
+
+Verify:
+cat ~/linux-lab/backup-source/files/employee.txt
+
+
+Expected result
+Important employee data
+
+
+You have now performed a complete backup and recovery exercise.
+4. Backup using tar
+tar is used to combine files and directories into an archive. You can compress that archive using gzip.
+
+Create a compressed backup:
+tar -czvf linux-backup.tar.gz ~/linux-lab/backup-source
+
+
+Options:
+Option	Meaning
+-c	Create archive
+-z	Compress using gzip
+-v	Display files
+-f	Specify archive filename
+
+List archive contents:
+tar -tzvf linux-backup.tar.gz
+
+
+Extract into a separate directory:
+mkdir -p ~/linux-lab/restore-tar
+tar -xzvf linux-backup.tar.gz -C ~/linux-lab/restore-tar
+
+
+5. Linux system troubleshooting
+Troubleshooting means finding the reason a system or application is not working correctly.
+
+For example, imagine your Spark application is running very slowly. You should check CPU, memory, disk and network.
+A. Check CPU and processes
+top
+
+
+Shows running processes and CPU/memory usage.
+
+Press q to exit.
+B. Check RAM
+free -h
+
+
+Shows total, used and available memory in human-readable units.
+C. Check disk space
+df -h
+
+
+Shows filesystem disk usage.
+
+Example problem: If a disk is 100% full, Spark or Hadoop may fail to write temporary files or logs.
+D. Check disk performance statistics
+iostat
+
+
+This command is provided by the sysstat package. Check whether it is available:
+command -v iostat
+
+
+If it is missing and you want to practise it:
+sudo apt install sysstat
+
+
+E. Check kernel messages
+sudo dmesg | tail
+
+
+Displays recent kernel messages, which can help identify hardware, device or system-level problems.
+F. Check network
+These are commands from our previous networking lesson:
+ip addr
+ip route
+ping -c 4 example.com
+ss -tulpen
+
+
+6. Troubleshooting sequence
+Suppose your Spark application is not working. Don't randomly restart services. Investigate step by step.
+Linux troubleshooting flow
+1. Check the application
+   
+   Is Spark, Hive or Hadoop running? Check its logs and service status.
+2. Check CPU
+   
+   Use top to identify high CPU usage.
+3. Check memory
+   
+   Use free -h to inspect RAM availability.
+4. Check disk
+   
+   Use df -h to identify full filesystems.
+5. Check network
+   
+   Use ip addr, ip route and ping.
+6. Find the cause and verify the fix
+   
+   Check logs again and test the application.
+
+7. RAS, MTBF and MTTR
+These are important terms in system administration.
+Term	Full form	Meaning
+RAS	Reliability, Availability, Serviceability	System reliability and ease of maintenance
+MTBF	Mean Time Between Failures	Average operating time between failures
+MTTR	Mean Time To Repair	Average time needed to repair a failure
+
+Example:
+
+Suppose a server works for 100 hours before a failure, and then takes 2 hours to repair.
+- MTBF = 100 hours
+- MTTR = 2 hours
+In general, higher MTBF and lower MTTR are desirable.
