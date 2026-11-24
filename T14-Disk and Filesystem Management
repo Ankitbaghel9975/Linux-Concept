@@ -1,0 +1,267 @@
+We'll cover exactly the topics in your training plan:
+1. Disks and partitions
+2. Filesystems
+3. Mount points
+4. /etc/fstab
+5. mount and umount
+6. Swap memory
+7. LVM – PV, VG and LV
+1. What is a disk?
+A disk is a storage device used to save data.
+
+Examples:
+- HDD – Hard Disk Drive
+- SSD – Solid State Drive
+- Virtual disk – Storage created for a VirtualBox VM.
+Imagine your Ubuntu VM has a 30 GB virtual disk. Linux uses this disk to store its operating system, applications, configuration files and user data.
+
+Check available disks:
+lsblk
+
+
+Example output:
+NAME   MAJ:MIN RM  SIZE TYPE MOUNTPOINTS
+sda      8:0    0   30G disk
+├─sda1   8:1    0  512M part /boot/efi
+└─sda2   8:2    0 29.5G part /
+
+
+Your actual output may be different.
+
+Understand:
+Name	Meaning
+sda	Disk
+sda1	First partition
+sda2	Second partition
+disk	Whole storage device
+part	Partition
+
+2. What is a partition?
+A partition is a logical division of a physical or virtual disk.
+
+For example, a 100 GB disk can be divided into:
+Example: 100 GB disk
+Partition 1
+
+Partition 2
+
+Partition 3
+
+
+25 GB
+System
+50 GB
+Data
+25 GB
+Backup
+
+Illustrative partition layout, not a recommended mandatory layout.
+
+Why do we create partitions?
+- Separate operating system and data.
+- Organize storage.
+- Support different filesystems.
+- Manage storage more easily.
+Important: A partition is not the same as a filesystem. A partition is a storage division; a filesystem organizes files and directories within storage.
+3. What is a filesystem?
+A filesystem is a method used by Linux to organize and store files on a storage device.
+
+Common Linux filesystems:
+Filesystem	Purpose
+ext4	Common Linux filesystem
+XFS	Often used on servers and large storage
+Btrfs	Supports features such as snapshots
+FAT32	Common on removable storage
+NTFS	Common Windows filesystem
+
+Example:
+lsblk -f
+
+
+You may see:
+NAME   FSTYPE LABEL UUID
+sda1   vfat         XXXX-XXXX
+sda2   ext4         xxxx-xxxx
+
+
+Here:
+- FSTYPE shows the filesystem type.
+- UUID identifies the filesystem.
+4. What is a mount point?
+A mount point is a directory where Linux makes a filesystem accessible.
+
+For example, suppose you have a separate data partition. You can make it accessible through:
+/data
+
+
+After mounting, applications can access the files through that directory.
+Storage device
+/dev/sdb1
+
+Partition with filesystem
+
+Mount point: /data
+
+Directory through which files are accessed
+
+file1.csv · file2.csv · file3.csv
+
+
+Remember:
+- Disk = storage device.
+- Partition = division of the disk.
+- Filesystem = structure used to organize files.
+- Mount point = directory used to access that filesystem.
+5. What are mount and umount?
+Linux uses mount to attach a filesystem to a directory and umount to detach it.
+
+Inspect currently mounted filesystems:
+mount
+
+
+Check disk space and filesystem type:
+df -hT
+
+
+General syntax:
+mount DEVICE MOUNT_POINT
+umount MOUNT_POINT
+
+
+Example for understanding only:
+sudo mount /dev/sdb1 /data
+sudo umount /data
+
+
+Do not execute the example commands
+/dev/sdb1 may not exist on your VM, and mounting an unknown device can cause problems. We'll only inspect existing storage in this lesson.
+6. What is /etc/fstab?
+/etc/fstab is a configuration file that defines filesystems that Linux should mount automatically, typically during boot.
+
+Inspect it:
+cat /etc/fstab
+
+
+An entry generally contains six fields:
+Field	Meaning
+1	Device, UUID or filesystem source
+2	Mount point
+3	Filesystem type
+4	Mount options
+5	Dump setting
+6	Filesystem check order
+
+Example for understanding:
+UUID=example-uuid /data ext4 defaults 0 2
+
+
+This describes an ext4 filesystem intended to be mounted at /data.
+
+Never copy this example into your actual /etc/fstab. Incorrect entries can cause boot or mounting problems.
+7. What is swap memory?
+Swap is disk space used as an extension of virtual memory.
+
+When RAM becomes pressured, Linux may move some memory pages to swap storage.
+
+Example:
+- Physical RAM: 8 GB
+- Swap: 4 GB
+This does not mean the system has 12 GB of physical RAM. Swap is much slower than RAM.
+
+Check memory:
+free -h
+
+
+Check active swap:
+swapon --show
+
+
+Example:
+NAME      TYPE      SIZE USED PRIO
+/swapfile file        4G   0B   -2
+
+
+Your output may differ, and you may have no active swap.
+8. What is LVM?
+LVM stands for Logical Volume Manager.
+
+It allows Linux administrators to manage storage more flexibly than using only fixed partitions.
+
+LVM has three important concepts:
+- PV – Physical Volume
+- VG – Volume Group
+- LV – Logical Volume
+PV – Physical Volume
+A disk or partition prepared for use by LVM.
+VG – Volume Group
+A storage pool created by combining one or more physical volumes.
+LV – Logical Volume
+A logical storage volume allocated from a volume group. It can be formatted with a filesystem and mounted.
+LVM architecture
+PV 1
+
+Disk / partition
+
+PV 2
+
+Disk / partition
+
+
+VG – Volume Group
+
+Combined storage pool
+
+LV 1
+
+Logical volume
+
+LV 2
+
+Logical volume
+
+
+
+Example:
+
+Suppose you have two 50 GB physical volumes:
+- PV1 = 50 GB
+- PV2 = 50 GB
+- VG = 100 GB total capacity
+You can allocate logical volumes from that storage pool, subject to available capacity and LVM configuration.
+
+Why use LVM?
+- Flexible storage allocation.
+- Easier volume expansion.
+- Logical volumes can be resized.
+- Storage can be managed as a pool.
+These are conceptual examples; don't create or modify LVM volumes on your existing VM for this exercise.
+9. Practical lab – Inspect your Ubuntu storage
+Now let's use the exact commands from your Excel roadmap.
+
+Run these one by one:
+
+1. List disks, partitions and filesystems
+lsblk -f
+
+
+2. Display filesystem UUIDs
+sudo blkid
+
+
+3. Show mounted filesystem usage and types
+df -hT
+
+
+4. Display current mount information
+mount
+
+
+5. Check RAM and swap information
+free -h
+
+
+6. Check active swap devices
+swapon --show
+
+
+Don't run fdisk, mkfs, parted, dd or filesystem formatting commands on your current disks. Your training workbook specifically says to inspect only unless using a disposable disk.
