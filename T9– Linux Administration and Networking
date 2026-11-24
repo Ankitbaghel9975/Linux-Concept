@@ -1,0 +1,115 @@
+Users, groups and administration
+Goal: Understand how Linux manages users and groups, how permissions are assigned, and why administrators use sudo.
+1. What is a user in Linux?
+A user is an account that can log in and use the Linux system.
+
+For example, in your Ubuntu VM:
+whoami
+
+
+It displays your current username.
+
+Linux has two common account types:
+Account	Meaning
+Root	Administrator account with full system privileges
+Normal user	Regular account with limited privileges
+
+The root user has UID 0. Normal users usually have a different UID.
+2. What is a group?
+A group is a collection of users.
+
+For example, imagine a Data Engineering team:
+- Ankit
+- Rahul
+- Priya
+Instead of giving file access to each person individually, an administrator can create a group named dataengineers and give that group permission to access a project directory.
+Example: Group-based access
+dataengineers group
+Ankit
+
+Rahul
+
+Priya
+
+
+
+Shared project directory
+
+/data/project
+
+The group can receive shared access according to the directory's permissions.
+
+3. Important Linux user and group files
+File	Purpose
+/etc/passwd	User account information
+/etc/shadow	Protected password-related information
+/etc/group	Group information
+
+Inspect them:
+cat /etc/passwd
+cat /etc/group
+
+
+For the protected password file, use:
+sudo less /etc/shadow
+
+
+Do not edit these files manually during this lesson.
+4. Important user and group commands
+Command	Purpose
+whoami	Shows current user
+id	Shows UID, GID and groups
+groups	Shows groups of current user
+id username	Shows information about another user
+sudo	Runs a command with elevated privileges
+useradd	Creates a user
+passwd	Sets or changes a password
+usermod	Modifies a user
+groupadd	Creates a group
+
+Examples:
+whoami
+id
+groups
+id vboxuser
+
+
+5. What is sudo?
+Suppose you want to install Apache:
+apt install apache2
+
+
+Linux may deny the operation because your normal account does not have administrator privileges.
+
+Use:
+sudo apt install apache2
+
+
+sudo allows an authorized user to execute a command with elevated privileges.
+
+Interview point: Linux follows the principle of least privilege. Give users only the permissions they need to perform their work.
+6. Practical lab – Create a test user and group
+Only do this in your Ubuntu VM, not on a shared or production server.
+
+First check whether these names already exist:
+getent passwd linuxstudent
+getent group dataengineers
+
+
+If neither exists, create them:
+sudo groupadd dataengineers
+sudo useradd -m linuxstudent
+sudo usermod -aG dataengineers linuxstudent
+
+
+Set a password if you want to test logging in as this user:
+sudo passwd linuxstudent
+
+
+Verify:
+id linuxstudent
+groups linuxstudent
+
+
+You should see dataengineers among the user's groups.
+
