@@ -1,0 +1,190 @@
+What is a firewall?
+A firewall is a security system that controls incoming and outgoing network traffic according to rules.
+
+Imagine your Ubuntu server has several services:
+- SSH – port 22
+- HTTP – port 80
+- HTTPS – port 443
+- Spark or Hadoop services – their configured ports
+You may want to allow SSH from trusted sources while blocking unnecessary connections.
+Network traffic
+Linux Firewall
+
+Checks traffic against firewall rules
+
+Allowed
+
+Blocked
+
+
+
+2. Inbound and outbound traffic
+Type	Meaning	Example
+Inbound	Traffic coming into your server	Someone connects to SSH
+Outbound	Traffic leaving your server	Ubuntu downloads packages
+
+Example:
+- A developer connects to your Linux server using SSH: inbound traffic.
+- Your server downloads a package using APT: outbound traffic.
+A firewall can have separate rules for both directions.
+3. What is UFW?
+UFW stands for Uncomplicated Firewall.
+
+It provides a simpler command-line interface for managing firewall rules on Ubuntu.
+
+Check whether UFW is installed and its current status:
+sudo ufw status verbose
+
+
+Possible output:
+Status: inactive
+
+
+Or:
+Status: active
+Default: deny (incoming), allow (outgoing)
+
+
+If it says inactive, that means UFW is not currently enforcing its rules. It does not necessarily mean the machine has no other firewall protection.
+4. Important UFW commands
+Command	Purpose
+sudo ufw status	Check firewall status
+sudo ufw status verbose	Show detailed status and policies
+sudo ufw enable	Enable firewall
+sudo ufw disable	Disable UFW
+sudo ufw allow 22/tcp	Allow TCP port 22
+sudo ufw deny 23/tcp	Deny TCP port 23
+sudo ufw delete allow 22/tcp	Delete a matching allow rule
+sudo ufw numbered	Display numbered rules
+
+Example: allow SSH:
+sudo ufw allow 22/tcp
+
+
+Example: allow HTTPS:
+sudo ufw allow 443/tcp
+
+
+Example: check rules:
+sudo ufw status numbered
+
+
+Important: These commands change firewall configuration. For this lesson, only inspect your current rules. Do not enable, disable or change firewall rules yet.
+5. What is iptables?
+iptables is a Linux firewall administration tool used to manage packet-filtering rules.
+
+UFW is a simpler interface; iptables exposes lower-level firewall rule management. On modern Ubuntu systems, the underlying packet-filtering framework may be nftables, with compatibility tools available.
+
+Inspect rules:
+sudo iptables -L -n -v
+
+
+Understand the options:
+- -L – list rules.
+- -n – show numeric IP addresses and ports.
+- -v – verbose output.
+Important iptables chains:
+Chain	Purpose
+INPUT	Traffic entering the local machine
+OUTPUT	Traffic leaving the local machine
+FORWARD	Traffic passing through the machine to another network
+
+Example packet flow
+Incoming connection
+INPUT chain
+ACCEPT
+
+Allow packet
+
+DROP
+
+Discard packet
+
+
+
+6. SSH security
+SSH stands for Secure Shell. It allows you to connect to a Linux machine remotely and execute commands securely.
+
+Default SSH server port: 22/tcp.
+
+Basic security practices:
+1. Use strong passwords or SSH keys.
+2. Give users only the access they need.
+3. Avoid allowing direct root login where possible.
+4. Keep SSH and the operating system updated.
+5. Restrict access to trusted networks where appropriate.
+6. Keep console access available when changing firewall rules.
+Check SSH service:
+systemctl status ssh
+
+
+Check whether port 22 is listening:
+sudo ss -tulpen | grep ':22'
+
+
+If SSH is not installed or running, these commands may show no matching service or socket. That's okay.
+7. Linux security and system updates
+Updates are important because they can include security fixes, bug fixes and improvements.
+
+First refresh package information:
+sudo apt update
+
+
+View packages that can be upgraded:
+apt list --upgradable
+
+
+Upgrade installed packages:
+sudo apt upgrade
+
+
+Remember:
+- apt update refreshes package information.
+- apt upgrade installs available upgrades.
+Use sudo only when required. Before executing an administrator command, understand what it changes.
+8. Practical lab – Inspect your Ubuntu security
+Run these commands one by one:
+
+Practical 1: Check UFW status
+sudo ufw status verbose
+
+
+Practical 2: Inspect iptables rules
+sudo iptables -L -n -v
+
+
+If iptables is unavailable, report the error rather than installing anything just for this exercise.
+
+Practical 3: Check SSH
+systemctl status ssh
+sudo ss -tulpen | grep ':22'
+
+
+Practical 4: Check available updates
+sudo apt update
+apt list --upgradable
+
+
+Safety reminder
+Your Excel study guide specifically warns that firewall changes can disconnect remote access. Keep your VirtualBox console available and have a rollback plan. Do not experiment on production servers or lock yourself out of SSH.
+
+For now, inspect only. Do not run ufw enable, change default policies, or add/remove firewall rules.
+9. Real-world scenario
+Suppose your company's Linux server is running, but developers cannot connect through SSH.
+
+A Linux administrator would investigate:
+1. Is the server reachable over the network?
+2. Is the SSH service running?
+3. Is SSH listening on the expected port?
+4. Does the firewall allow the connection?
+5. Are the user credentials or SSH keys valid?
+Useful commands:
+ip addr
+ip route
+systemctl status ssh
+sudo ss -tulpen
+sudo ufw status verbose
+journalctl -u ssh -n 50
+
+
+This is how networking, services, logs and security work together.
